@@ -15,8 +15,6 @@ namespace Hangfire.MEF.Tests
         [TestInitialize]
         public void Setup()
         {
-            AggregateCatalog catalog = new AggregateCatalog();
-            catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
             _container = new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
         }
 
@@ -54,7 +52,7 @@ namespace Hangfire.MEF.Tests
         }
 
         [TestMethod]
-        public void UseNinjectActivator_PassesCorrectActivator()
+        public void UseMEFActivator_PassesCorrectActivator()
         {
             var configuration = new Mock<IBootstrapperConfiguration>();
             
