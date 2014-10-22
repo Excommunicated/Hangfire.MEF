@@ -1,6 +1,8 @@
 Hangfire.MEF
 ============
 
+[![Build status](https://ci.appveyor.com/api/projects/status/auuddb3tjqax80lw?svg=true)](https://ci.appveyor.com/project/Excommunicated/hangfire-mef)
+
 [Hangfire](http://hangfire.io) background job activator based on 
 [MEF](http://msdn.microsoft.com/en-us/library/dd460648(v=vs.110).aspx) IoC Container. It allows you to use instance
 methods of classes that define parametrised constructors:
