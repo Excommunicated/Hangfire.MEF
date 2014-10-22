@@ -17,7 +17,7 @@ namespace Hangfire.MEF.Tests
         {
             AggregateCatalog catalog = new AggregateCatalog();
             catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
-            _container = new CompositionContainer(catalog);
+            _container = new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
         }
 
         [TestMethod]
