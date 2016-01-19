@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HangFire.MEF")]
 [assembly: AssemblyDescription("MEF IoC Container support for Hangfire (background job system for ASP.NET applications).")]
 [assembly: AssemblyProduct("HangFire")]
-[assembly: AssemblyCopyright("Copyright ©  2014 Matthew Sheeley")]
+[assembly: AssemblyCopyright("Copyright ©  2016 Matthew Sheeley")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -28,5 +28,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.2")]
-[assembly: AssemblyFileVersion("1.2.2")]
+[assembly: AssemblyVersion("1.5.3")]
+[assembly: AssemblyFileVersion("1.5.3")]

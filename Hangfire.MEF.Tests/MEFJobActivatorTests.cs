@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Registration;
+using System.Linq;
 using System.Reflection;
 using HangFire.MEF;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,7 +18,10 @@ namespace Hangfire.MEF.Tests
         [TestInitialize]
         public void Setup()
         {
-            _container = new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
+            RegistrationBuilder builder = new RegistrationBuilder();
+            builder.ForType<Disposable>().Export().SetCreationPolicy(CreationPolicy.NonShared);
+            builder.ForType<SingletonDisposable>().Export().SetCreationPolicy(CreationPolicy.Shared);
+            _container = new CompositionContainer(new AssemblyCatalog(Assembly.GetExecutingAssembly(),builder));
         }
 
         [TestMethod]
@@ -29,7 +35,7 @@ namespace Hangfire.MEF.Tests
         [TestMethod]
         public void Class_IsBasedOnJobActivator()
         {
-            var activator = new MEFJobActivator(_container);
+            var activator = CreateActivator();
             Assert.IsInstanceOfType(activator, typeof(JobActivator));
         }
 
@@ -59,6 +65,30 @@ namespace Hangfire.MEF.Tests
             configuration.Object.UseMEFActivator(_container);
 
             configuration.Verify(x => x.UseActivator(It.IsAny<MEFJobActivator>()));
+        }
+
+        private MEFJobActivator CreateActivator()
+        {
+            var activator = new MEFJobActivator(_container);
+            return activator;
+        }
+
+        class Disposable: IDisposable
+        {
+            public bool Disposed { get; set; }
+            public void Dispose()
+            {
+                Disposed = true;
+            }
+        }
+       
+        class SingletonDisposable : IDisposable
+        {
+            public bool Disposed { get; set; }
+            public void Dispose()
+            {
+                Disposed = true;
+            }
         }
     }
 }
