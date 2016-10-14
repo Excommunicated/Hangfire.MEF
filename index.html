@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Hangfire.MEF by Excommunicated</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Hangfire.MEF</h1>
+      <h2 class="project-tagline">HangFire job activator based on MEF IoC Container</h2>
+      <a href="https://github.com/Excommunicated/Hangfire.MEF" class="btn">View on GitHub</a>
+      <a href="https://github.com/Excommunicated/Hangfire.MEF/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Excommunicated/Hangfire.MEF/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><a href="http://hangfire.io">Hangfire</a> background job activator based on 
+<a href="http://msdn.microsoft.com/en-us/library/dd460648(v=vs.110).aspx">MEF</a> IoC Container. It allows you to use instance
+methods of classes that define parametrised constructors:</p>
+
+<div class="highlight highlight-source-cs"><pre>[Export]
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">EmailService</span>
+{
+    <span class="pl-k">private</span> DbContext _context;
+    <span class="pl-k">private</span> IEmailSender _sender;
+
+    [ImportingConstructor]
+    <span class="pl-k">public</span> <span class="pl-en">EmailService</span>(<span class="pl-k">DbContext</span> <span class="pl-smi">context</span>, <span class="pl-k">IEmailSender</span> <span class="pl-smi">sender</span>)
+    {
+        _context = context;
+        _sender = sender;
+    }
+
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">Send</span>(<span class="pl-k">int</span> <span class="pl-smi">userId</span>, <span class="pl-k">string</span> <span class="pl-smi">message</span>)
+    {
+        <span class="pl-k">var</span> user = _context.Users.Get(userId);
+        _sender.Send(user.Email, message);
+    }
+}   
+
+<span class="pl-c">// Somewhere in the code</span>
+BackgroundJob.Enqueue&lt;EmailService&gt;(x =&gt; x.Send(<span class="pl-c1">1</span>, <span class="pl-s"><span class="pl-pds">"</span>Hello, world!<span class="pl-pds">"</span></span>));</pre></div>
+
+<p>Improve the testability of your jobs without static factories!</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Hangfire.MEF is available as a NuGet Package. Type the following
+command into NuGet Package Manager Console window to install it:</p>
+
+<pre><code>Install-Package Hangfire.MEF
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>The package provides an extension method for <a href="http://docs.hangfire.io/en/latest/users-guide/getting-started/owin-bootstrapper.html">OWIN bootstrapper</a>:</p>
+
+<div class="highlight highlight-source-cs"><pre>AggregateCatalog catalog = <span class="pl-k">new</span> AggregateCatalog();
+catalog.Catalogs.Add(<span class="pl-k">new</span> AssemblyCatalog(Assembly.GetExecutingAssembly()));
+<span class="pl-c">// add other assembly, directory, aggregate catalogs etc. here</span>
+<span class="pl-k">var</span> container = <span class="pl-k">new</span> CompositionContainer(catalog);
+
+app.UseHangfire(config =&gt;
+{
+    config.UseMEFActivator(container);
+});</pre></div>
+
+<p>In order to use the library outside of web application, set the static <code>JobActivator.Current</code> property:</p>
+
+<div class="highlight highlight-source-cs"><pre><span class="pl-k">var</span> container = <span class="pl-k">new</span> CompositionContainer();
+JobActivator.Current = <span class="pl-k">new</span> MEFJobActivator(container);</pre></div>
+
+<h2>
+<a id="http-request-warnings" class="anchor" href="#http-request-warnings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>HTTP Request warnings</h2>
+
+<p>Services registered with <code>InRequestScope()</code> directive <strong>will be unavailable</strong>
+during job activation, you should re-register these services without this
+hint.</p>
+
+<p><code>HttpContext.Current</code> is also <strong>not available</strong> during the job performance. 
+Don't use it!</p>
+
+<h2>
+<a id="credits" class="anchor" href="#credits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits</h2>
+
+<p>This project and this readme is based on the <a href="https://github.com/HangfireIO/Hangfire.Ninject">Hangfire.Ninject</a> 
+project by <a href="https://github.com/odinserj">Sergey Odinokov</a> Many thanks go out to him for his great work on the
+ <a href="http://hangfire.io">Hangfire</a> project as well.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Excommunicated/Hangfire.MEF">Hangfire.MEF</a> is maintained by <a href="https://github.com/Excommunicated">Excommunicated</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
